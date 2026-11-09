@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_seminario_alvaro/logic/dates.dart';
 import 'package:proyecto_seminario_alvaro/models/event_series.dart';
+import 'package:proyecto_seminario_alvaro/theme/app_theme.dart';
 
 /// A card displaying a series summary with an action on tap.
 class SeriesCard extends StatelessWidget {
@@ -28,6 +29,7 @@ class SeriesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     final count = series.editions.length;
     final countText = count == 1 ? '1 edición' : '$count ediciones';
     final nextText = _nextEditionText(DateTime.now());
@@ -39,43 +41,48 @@ class SeriesCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 12,
             children: [
-              Text(
-                series.name,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-              const SizedBox(height: 6),
-              if (series.description.isNotEmpty) ...[
-                Text(
-                  series.description,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                const SizedBox(height: 8),
-              ],
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    countText,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.w600,
+                child: const Icon(Icons.event_repeat, color: AppColors.primary),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 6,
+                  children: [
+                    Text(series.name, style: textTheme.titleMedium),
+                    if (series.description.isNotEmpty)
+                      Text(
+                        series.description,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: AppColors.mutedText,
                         ),
-                  ),
-                  Text(
-                    nextText,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(countText, style: textTheme.labelMedium),
+                        Text(
+                          nextText,
+                          style: textTheme.labelMedium?.copyWith(
+                            color: AppColors.primary,
+                          ),
                         ),
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

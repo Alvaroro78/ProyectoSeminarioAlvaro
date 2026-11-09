@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 /// App color palette definition.
 abstract final class AppColors {
   static const Color primary = Color(0xFF4453C9);
+  static const Color primaryDark = Color(0xFF2F3A9E);
   static const Color background = Color(0xFFFBFBFD);
   static const Color surface = Color(0xFFFFFFFF);
   static const Color border = Color(0xFFDCDDE6);
@@ -31,7 +32,42 @@ ThemeData buildTheme() {
       foregroundColor: AppColors.text,
       elevation: 0,
       scrolledUnderElevation: 0,
+      titleTextStyle: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        color: AppColors.text,
+      ),
     ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        minimumSize: const Size(0, 44),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        textStyle: const TextStyle(fontWeight: FontWeight.w600),
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        minimumSize: const Size(0, 44),
+        side: const BorderSide(color: AppColors.border),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+    ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: AppColors.primary,
+      foregroundColor: AppColors.surface,
+    ),
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: AppColors.surface,
+      selectedItemColor: AppColors.primary,
+      unselectedItemColor: AppColors.mutedText,
+      type: BottomNavigationBarType.fixed,
+      elevation: 8,
+    ),
+    dividerTheme: const DividerThemeData(color: AppColors.border),
     cardTheme: const CardThemeData(
       color: AppColors.surface,
       elevation: 0,

@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_seminario_alvaro/components/empty_message.dart';
 import 'package:proyecto_seminario_alvaro/components/event_card.dart';
+import 'package:proyecto_seminario_alvaro/components/greeting_header.dart';
 import 'package:proyecto_seminario_alvaro/logic/registrations.dart';
 import 'package:proyecto_seminario_alvaro/models/edition.dart';
 import 'package:proyecto_seminario_alvaro/models/event_series.dart';
 
 /// A tab page listing published events open for registration.
 class EventsPage extends StatelessWidget {
+  final String userName;
   final List<EventSeries> series;
   final String userId;
   final Function(EventSeries, Edition) onOpen;
 
   const EventsPage({
     super.key,
+    required this.userName,
     required this.series,
     required this.userId,
     required this.onOpen,
@@ -42,20 +45,25 @@ class EventsPage extends StatelessWidget {
 
     items.sort((a, b) => a.$2.dateTime.compareTo(b.$2.dateTime));
 
-    if (items.isEmpty) {
-      return const EmptyMessage(text: 'No hay eventos abiertos por ahora.');
-    }
+    final firstName = userName.split(' ').first;
+    final summary = items.length == 1
+        ? '1 evento abierto para inscribirte'
+        : '${items.length} eventos abiertos para inscribirte';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (final item in items)
-          EventCard(
-            series: item.$1,
-            edition: item.$2,
-            spotsText: _spotsText(item.$2),
-            onTap: () => onOpen(item.$1, item.$2),
-          ),
+        GreetingHeader(greeting: 'Hola, $firstName', summary: summary),
+        if (items.isEmpty)
+          const EmptyMessage(text: 'No hay eventos abiertos por ahora.')
+        else
+          for (final item in items)
+            EventCard(
+              series: item.$1,
+              edition: item.$2,
+              spotsText: _spotsText(item.$2),
+              onTap: () => onOpen(item.$1, item.$2),
+            ),
       ],
     );
   }

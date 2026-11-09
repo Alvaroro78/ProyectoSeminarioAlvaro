@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:proyecto_seminario_alvaro/components/app_drawer.dart';
 import 'package:proyecto_seminario_alvaro/components/centered_body.dart';
 import 'package:proyecto_seminario_alvaro/data/mock_data.dart';
 import 'package:proyecto_seminario_alvaro/logic/registrations.dart';
@@ -37,6 +38,13 @@ class _AttendeeMainScreenState extends State<AttendeeMainScreen> {
 
   void _logout() {
     Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+  }
+
+  void _selectFromDrawer(int index) {
+    Navigator.pop(context);
+    setState(() {
+      _index = index;
+    });
   }
 
   Future<void> _openEvent(EventSeries series, Edition edition) async {
@@ -112,11 +120,24 @@ class _AttendeeMainScreenState extends State<AttendeeMainScreen> {
       appBar: AppBar(
         title: Text(_title),
       ),
+      drawer: AppDrawer(
+        user: _user,
+        sections: const ['Eventos', 'Mis inscripciones', 'Mi perfil'],
+        icons: const [
+          Icons.event_available,
+          Icons.confirmation_number_outlined,
+          Icons.person,
+        ],
+        selected: _index,
+        onSelect: _selectFromDrawer,
+        onLogout: _logout,
+      ),
       body: CenteredBody(
         child: IndexedStack(
           index: _index,
           children: [
             EventsPage(
+              userName: _user.name,
               series: _series,
               userId: _user.id,
               onOpen: (s, e) => _openEvent(s, e),

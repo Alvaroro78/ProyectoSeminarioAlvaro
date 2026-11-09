@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:proyecto_seminario_alvaro/components/app_drawer.dart';
 import 'package:proyecto_seminario_alvaro/components/centered_body.dart';
 import 'package:proyecto_seminario_alvaro/data/mock_data.dart';
 import 'package:proyecto_seminario_alvaro/models/app_user.dart';
@@ -34,6 +35,13 @@ class _OrganizerMainScreenState extends State<OrganizerMainScreen> {
 
   void _logout() {
     Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+  }
+
+  void _selectFromDrawer(int index) {
+    Navigator.pop(context);
+    setState(() {
+      _index = index;
+    });
   }
 
   Future<void> _newSeries() async {
@@ -80,11 +88,20 @@ class _OrganizerMainScreenState extends State<OrganizerMainScreen> {
       appBar: AppBar(
         title: Text(_index == 0 ? 'Mis series' : 'Mi perfil'),
       ),
+      drawer: AppDrawer(
+        user: _user,
+        sections: const ['Mis series', 'Mi perfil'],
+        icons: const [Icons.list_alt, Icons.person],
+        selected: _index,
+        onSelect: _selectFromDrawer,
+        onLogout: _logout,
+      ),
       body: CenteredBody(
         child: IndexedStack(
           index: _index,
           children: [
             SeriesPage(
+              userName: _user.name,
               series: _series,
               onOpen: _openSeries,
             ),
