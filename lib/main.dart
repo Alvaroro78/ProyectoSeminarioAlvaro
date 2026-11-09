@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:proyecto_seminario_alvaro/screens/attendance_screen.dart';
 import 'package:proyecto_seminario_alvaro/screens/attendee_main_screen.dart';
 import 'package:proyecto_seminario_alvaro/screens/edition_screen.dart';
+import 'package:proyecto_seminario_alvaro/screens/event_detail_screen.dart';
+import 'package:proyecto_seminario_alvaro/screens/form_builder_screen.dart';
 import 'package:proyecto_seminario_alvaro/screens/login_screen.dart';
+import 'package:proyecto_seminario_alvaro/screens/messages_screen.dart';
 import 'package:proyecto_seminario_alvaro/screens/new_edition_screen.dart';
 import 'package:proyecto_seminario_alvaro/screens/new_series_screen.dart';
 import 'package:proyecto_seminario_alvaro/screens/organizer_main_screen.dart';
 import 'package:proyecto_seminario_alvaro/screens/register_screen.dart';
 import 'package:proyecto_seminario_alvaro/screens/series_screen.dart';
+import 'package:proyecto_seminario_alvaro/screens/tasks_screen.dart';
 import 'package:proyecto_seminario_alvaro/theme/app_theme.dart';
 
 void main() {
@@ -32,7 +37,12 @@ class App extends StatelessWidget {
         '/series': (context) => const SeriesScreen(),
         '/editions/new': (context) => const NewEditionScreen(),
         '/editions': (context) => const EditionScreen(),
+        '/editions/form': (context) => const FormBuilderScreen(),
+        '/editions/messages': (context) => const MessagesScreen(),
+        '/editions/tasks': (context) => const TasksScreen(),
+        '/editions/attendance': (context) => const AttendanceScreen(),
         '/attendee': (context) => const AttendeeMainScreen(),
+        '/events/detail': (context) => const EventDetailScreen(),
       },
     );
   }

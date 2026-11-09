@@ -167,7 +167,7 @@ flowchart LR
 | Entrega | Qué | Estado |
 |---|---|---|
 | 1 | Contexto, MER, prototipo en Stitch/Figma y galería de componentes | Contexto y modelo listos; prototipo con los prompts de `docs/prototipo_stitch.md` |
-| 2 | Prototipo Flutter con estado, navegación y datos simulados | Documentos listos; código con Antigravity (`PASOS.md`) |
+| 2 | Prototipo Flutter con estado, navegación y datos simulados | Hecho: 13 specs implementadas con datos simulados |
 | 3 | App con Supabase, specs completas, repositorio con AGENTS.md y skills | Pendiente |
 
 ## 10. Cómo ejecutarlo
@@ -187,11 +187,11 @@ Cuentas de prueba (contraseña `123456`): organizadora `laura@eventos.co`, invit
 |---|---|
 | Claude | Análisis del reto, propuesta de solución, PRD, requisitos, spine, specs, datos simulados y guion de trabajo. Revisión del código. |
 | Google Stitch | Prototipo visual, exportado a Figma. |
-| Antigravity CLI con las skills del curso | Crítica de las specs (`sdd-critica`), código Flutter (`flutter-componentes`) y MER (`mer-svg`). |
+| Antigravity CLI con las skills del curso | Crítica de las specs (`sdd-critica`) y código Flutter de los pedidos 1 a 4 (`flutter-componentes`): modelos, datos simulados, lógica y pruebas, acceso y navegación, series, ediciones y recomendaciones. Modelos: Claude Sonnet 4.6 y Gemini 3.8 Flash. |
+| Claude (cuando se agotó el cupo de Antigravity) | Tema `AppColors`, formulario, mensajes, tareas, asistencia, detalle del evento e inscripción, siguiendo las mismas reglas de `AGENTS.md` y de la skill `flutter-componentes`. |
 
 Todo lo generado se revisó contra las specs, los criterios de aceptación y las pruebas de `test/logic_test.dart`.
 
 ## 12. Equipo
 
-- Álvaro José Roa Álvarez
-- (agregar integrantes)
+- Álvaro José Roa Álvarez (trabajo individual)

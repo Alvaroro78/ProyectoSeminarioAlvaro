@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:proyecto_seminario_alvaro/components/centered_body.dart';
 import 'package:proyecto_seminario_alvaro/data/mock_data.dart';
 import 'package:proyecto_seminario_alvaro/models/app_user.dart';
+import 'package:proyecto_seminario_alvaro/theme/app_theme.dart';
 
 /// The authentication screen where users log in or navigate to registration.
 class LoginScreen extends StatefulWidget {
@@ -88,71 +89,110 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Iniciar sesión'),
-      ),
       body: CenteredBody(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 24),
-            Text(
-              'Bienvenido',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Ingresa tu correo y contraseña para continuar.',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-            ),
-            const SizedBox(height: 32),
-            TextField(
-              controller: _emailController,
-              keyboardType: TextInputType.emailAddress,
-              autocorrect: false,
-              decoration: const InputDecoration(
-                labelText: 'Correo electrónico',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.email_outlined),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'Contraseña',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.lock_outline),
-              ),
-            ),
-            if (_error != null) ...[
-              const SizedBox(height: 16),
-              Text(
-                _error!,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
-                  fontWeight: FontWeight.w600,
+            const SizedBox(height: 40),
+            Center(
+              child: Container(
+                width: 72,
+                height: 72,
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Icon(
+                  Icons.event_repeat,
+                  size: 40,
+                  color: AppColors.surface,
                 ),
               ),
-            ],
-            const SizedBox(height: 24),
-            FilledButton(
-              onPressed: _isLoading ? null : _login,
-              style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 14),
-              ),
-              child: Text(_isLoading ? 'Entrando…' : 'Entrar'),
             ),
             const SizedBox(height: 16),
-            TextButton(
-              onPressed: _isLoading ? null : _goToRegister,
-              child: const Text('Crear cuenta'),
+            Text(
+              'ProyectoSeminarioAlvaro',
+              textAlign: TextAlign.center,
+              style: textTheme.headlineSmall?.copyWith(
+                color: AppColors.primary,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'La siguiente edición de tu evento, a partir de la anterior.',
+              textAlign: TextAlign.center,
+              style: textTheme.bodyMedium?.copyWith(
+                color: AppColors.mutedText,
+              ),
+            ),
+            const SizedBox(height: 32),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: 16,
+                  children: [
+                    Text('Iniciar sesión', style: textTheme.titleLarge),
+                    TextField(
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      autocorrect: false,
+                      decoration: const InputDecoration(
+                        labelText: 'Correo electrónico',
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.email_outlined),
+                      ),
+                    ),
+                    TextField(
+                      controller: _passwordController,
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                        labelText: 'Contraseña',
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.lock_outline),
+                      ),
+                    ),
+                    if (_error != null)
+                      Text(
+                        _error!,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.error,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    FilledButton(
+                      onPressed: _isLoading ? null : _login,
+                      style: FilledButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      child: Text(_isLoading ? 'Entrando…' : 'Entrar'),
+                    ),
+                    TextButton(
+                      onPressed: _isLoading ? null : _goToRegister,
+                      child: const Text('Crear cuenta'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Cuentas de prueba (contraseña 123456)',
+              textAlign: TextAlign.center,
+              style: textTheme.labelMedium?.copyWith(
+                color: AppColors.mutedText,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Organizadora: laura@eventos.co\nInvitada: valentina.rios@correo.co',
+              textAlign: TextAlign.center,
+              style: textTheme.bodySmall?.copyWith(
+                color: AppColors.mutedText,
+              ),
             ),
           ],
         ),

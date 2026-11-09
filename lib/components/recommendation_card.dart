@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_seminario_alvaro/models/recommendation.dart';
+import 'package:proyecto_seminario_alvaro/theme/app_theme.dart';
 
 /// A card presenting a data-backed recommendation with accept and discard actions.
 class RecommendationCard extends StatelessWidget {
@@ -16,12 +17,13 @@ class RecommendationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF3DC),
+        color: AppColors.recommendationBackground,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFF0C572)),
+        border: Border.all(color: AppColors.recommendationBorder),
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -31,36 +33,28 @@ class RecommendationCard extends StatelessWidget {
             children: [
               const Icon(
                 Icons.lightbulb_outline,
-                color: Color(0xFFA96C05),
+                color: AppColors.recommendationTitle,
                 size: 20,
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   recommendation.title,
-                  style: const TextStyle(
-                    color: Color(0xFFA96C05),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                  style: textTheme.titleMedium?.copyWith(
+                    color: AppColors.recommendationTitle,
                   ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          Text(
-            recommendation.evidence,
-            style: const TextStyle(
-              color: Colors.black87,
-              fontSize: 14,
-            ),
-          ),
+          Text(recommendation.evidence, style: textTheme.bodyMedium),
           if (recommendation.people.isNotEmpty) ...[
             const SizedBox(height: 10),
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.7),
+                color: AppColors.surface.withValues(alpha: 0.7),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
@@ -71,14 +65,14 @@ class RecommendationCard extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 2),
                       child: Row(
                         children: [
-                          const Icon(Icons.person_outline,
-                              size: 14, color: Color(0xFFA96C05)),
+                          const Icon(
+                            Icons.person_outline,
+                            size: 14,
+                            color: AppColors.recommendationTitle,
+                          ),
                           const SizedBox(width: 6),
                           Expanded(
-                            child: Text(
-                              person,
-                              style: const TextStyle(fontSize: 13),
-                            ),
+                            child: Text(person, style: textTheme.bodySmall),
                           ),
                         ],
                       ),
@@ -99,8 +93,8 @@ class RecommendationCard extends StatelessWidget {
               FilledButton(
                 onPressed: () => onAccept(),
                 style: FilledButton.styleFrom(
-                  backgroundColor: const Color(0xFFA96C05),
-                  foregroundColor: Colors.white,
+                  backgroundColor: AppColors.recommendationTitle,
+                  foregroundColor: AppColors.surface,
                 ),
                 child: const Text('Aceptar'),
               ),

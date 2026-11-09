@@ -29,7 +29,7 @@ class SectionButton extends StatelessWidget {
         ),
         title: Text(
           title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.titleSmall,
         ),
         subtitle: Text(detail),
         trailing: const Icon(Icons.chevron_right),

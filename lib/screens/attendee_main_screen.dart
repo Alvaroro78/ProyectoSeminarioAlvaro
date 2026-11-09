@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_seminario_alvaro/components/centered_body.dart';
 import 'package:proyecto_seminario_alvaro/data/mock_data.dart';
+import 'package:proyecto_seminario_alvaro/logic/registrations.dart';
 import 'package:proyecto_seminario_alvaro/models/app_user.dart';
 import 'package:proyecto_seminario_alvaro/models/edition.dart';
 import 'package:proyecto_seminario_alvaro/models/event_series.dart';
+import 'package:proyecto_seminario_alvaro/models/nav_args.dart';
+import 'package:proyecto_seminario_alvaro/models/registration.dart';
 import 'package:proyecto_seminario_alvaro/pages/events_page.dart';
 import 'package:proyecto_seminario_alvaro/pages/my_registrations_page.dart';
 import 'package:proyecto_seminario_alvaro/pages/profile_page.dart';
@@ -34,6 +37,55 @@ class _AttendeeMainScreenState extends State<AttendeeMainScreen> {
 
   void _logout() {
     Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+  }
+
+  Future<void> _openEvent(EventSeries series, Edition edition) async {
+    final result = await Navigator.pushNamed(
+      context,
+      '/events/detail',
+      arguments: EventArgs(series: series, edition: edition, user: _user),
+    );
+
+    if (result is Map<String, String> && mounted) {
+      _register(series.id, edition.id, result);
+    }
+  }
+
+  void _register(
+    String seriesId,
+    String editionId,
+    Map<String, String> answers,
+  ) {
+    final seriesIndex = _series.indexWhere((s) => s.id == seriesId);
+    if (seriesIndex < 0) return;
+    final series = _series[seriesIndex];
+    final editionIndex = series.editions.indexWhere((e) => e.id == editionId);
+    if (editionIndex < 0) return;
+    final edition = series.editions[editionIndex];
+    if (isRegistered(edition, _user.id) || freeSpots(edition) <= 0) return;
+
+    final registration = Registration(
+      id: 'r-${DateTime.now().microsecondsSinceEpoch}',
+      userId: _user.id,
+      userName: _user.name,
+      userEmail: _user.email,
+      code: nextRegistrationCode(edition),
+      registeredAt: DateTime.now(),
+      attended: false,
+      answers: answers,
+    );
+
+    final editions = [...series.editions];
+    editions[editionIndex] = edition.copyWith(
+      registrations: [...edition.registrations, registration],
+    );
+    final updatedSeries = [..._series];
+    updatedSeries[seriesIndex] = series.copyWith(editions: editions);
+
+    setState(() {
+      _series = updatedSeries;
+      _index = 1;
+    });
   }
 
   String get _title {
@@ -67,7 +119,7 @@ class _AttendeeMainScreenState extends State<AttendeeMainScreen> {
             EventsPage(
               series: _series,
               userId: _user.id,
-              onOpen: (EventSeries s, Edition e) {},
+              onOpen: (s, e) => _openEvent(s, e),
             ),
             MyRegistrationsPage(
               series: _series,

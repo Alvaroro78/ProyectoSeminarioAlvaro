@@ -39,6 +39,7 @@ No hay IA en la app, no se envían correos (los mensajes se copian), no hay pago
 - Toda Screen tiene `Scaffold`, y su `body` es un `CenteredBody`.
 - La lógica va en `lib/logic/` y nunca en un widget. Recibe `today` como parámetro; la Screen pasa `DateTime.now()`.
 - Todo `TextEditingController` tiene su `dispose()`.
+- Colores solo desde `AppColors` de `lib/theme/app_theme.dart`; estilos de texto desde `Theme.of(context).textTheme`.
 - Imports con `package:proyecto_seminario_alvaro/`. Código en inglés; textos de la interfaz en español. Una línea `///` sobre cada clase pública; sin más comentarios.
 
 ## Reglas para el agente

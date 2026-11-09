@@ -162,7 +162,7 @@ class _NewEditionScreenState extends State<NewEditionScreen> {
                     children: [
                       Text(
                         'Copiando de Edición ${_base!.number}',
-                        style: TextStyle(
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(context)
                               .colorScheme
                               .onPrimaryContainer,
@@ -174,7 +174,7 @@ class _NewEditionScreenState extends State<NewEditionScreen> {
                         'Se copiarán ${_base!.fields.length} preguntas, '
                         '${_base!.messages.length} mensajes y '
                         '${_base!.tasks.length} tareas heredadas.',
-                        style: TextStyle(
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(context)
                               .colorScheme
                               .onPrimaryContainer,
@@ -191,7 +191,7 @@ class _NewEditionScreenState extends State<NewEditionScreen> {
                   padding: const EdgeInsets.all(16),
                   child: Text(
                     'Esta será la primera edición de la serie. Ingresa los datos iniciales.',
-                    style: TextStyle(
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
@@ -257,7 +257,7 @@ class _NewEditionScreenState extends State<NewEditionScreen> {
               const SizedBox(height: 16),
               Text(
                 _error!,
-                style: TextStyle(
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(context).colorScheme.error,
                   fontWeight: FontWeight.w600,
                 ),

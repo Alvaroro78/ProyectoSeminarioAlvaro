@@ -103,7 +103,7 @@ class _NewSeriesScreenState extends State<NewSeriesScreen> {
               const SizedBox(height: 16),
               Text(
                 _error!,
-                style: TextStyle(
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(context).colorScheme.error,
                   fontWeight: FontWeight.w600,
                 ),

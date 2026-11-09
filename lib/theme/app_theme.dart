@@ -4,14 +4,17 @@ import 'package:flutter/material.dart';
 abstract final class AppColors {
   static const Color primary = Color(0xFF4453C9);
   static const Color background = Color(0xFFFBFBFD);
+  static const Color surface = Color(0xFFFFFFFF);
   static const Color border = Color(0xFFDCDDE6);
+  static const Color text = Color(0xFF161A26);
+  static const Color mutedText = Color(0xFF79809A);
   static const Color draft = Color(0xFF79809A);
   static const Color published = Color(0xFF0F8478);
   static const Color closed = Color(0xFF454C61);
   static const Color recommendationBackground = Color(0xFFFFF3DC);
   static const Color recommendationBorder = Color(0xFFF0C572);
   static const Color recommendationTitle = Color(0xFFA96C05);
-  static const Color late = Colors.red;
+  static const Color late = Color(0xFFD32F2F);
 }
 
 ThemeData buildTheme() {
@@ -19,9 +22,24 @@ ThemeData buildTheme() {
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(
       seedColor: AppColors.primary,
+      primary: AppColors.primary,
       surface: AppColors.background,
     ),
     scaffoldBackgroundColor: AppColors.background,
+    appBarTheme: const AppBarTheme(
+      backgroundColor: AppColors.background,
+      foregroundColor: AppColors.text,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+    ),
+    cardTheme: const CardThemeData(
+      color: AppColors.surface,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(12)),
+        side: BorderSide(color: AppColors.border),
+      ),
+    ),
     textTheme: const TextTheme(
       headlineLarge: TextStyle(
         fontSize: 32,

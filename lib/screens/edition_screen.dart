@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_seminario_alvaro/components/centered_body.dart';
 import 'package:proyecto_seminario_alvaro/components/edition_summary.dart';
+import 'package:proyecto_seminario_alvaro/components/invitation_box.dart';
 import 'package:proyecto_seminario_alvaro/components/recommendation_card.dart';
 import 'package:proyecto_seminario_alvaro/components/section_button.dart';
 import 'package:proyecto_seminario_alvaro/logic/cloning.dart';
+import 'package:proyecto_seminario_alvaro/logic/messages.dart';
 import 'package:proyecto_seminario_alvaro/logic/recommendations.dart';
+import 'package:proyecto_seminario_alvaro/logic/registrations.dart';
 import 'package:proyecto_seminario_alvaro/logic/savings.dart';
+import 'package:proyecto_seminario_alvaro/logic/tasks.dart';
 import 'package:proyecto_seminario_alvaro/logic/templates.dart';
 import 'package:proyecto_seminario_alvaro/models/edition.dart';
 import 'package:proyecto_seminario_alvaro/models/event_series.dart';
 import 'package:proyecto_seminario_alvaro/models/nav_args.dart';
 import 'package:proyecto_seminario_alvaro/models/recommendation.dart';
+import 'package:proyecto_seminario_alvaro/theme/app_theme.dart';
 
 /// The screen managing an edition with recommendations, lifecycle, and section buttons.
 class EditionScreen extends StatefulWidget {
@@ -86,6 +91,27 @@ class _EditionScreenState extends State<EditionScreen> {
     });
   }
 
+  void _hideInvitation() {
+    setState(() {
+      _shownInvitation = null;
+      _shownEmails = null;
+    });
+  }
+
+  Future<void> _openSection(String route) async {
+    final updated = await Navigator.pushNamed(
+      context,
+      route,
+      arguments: EditionArgs(series: _series, edition: _edition),
+    );
+
+    if (updated is Edition && mounted) {
+      setState(() {
+        _edition = updated;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!_initialized) {
@@ -94,13 +120,12 @@ class _EditionScreenState extends State<EditionScreen> {
       );
     }
 
+    final textTheme = Theme.of(context).textTheme;
+    final today = DateTime.now();
     final history = historyFor(_series, _edition);
     final recs = _edition.status == 'closed'
         ? <Recommendation>[]
         : buildRecommendations(_series, _edition);
-
-    final attendedCount =
-        _edition.registrations.where((r) => r.attended).length;
 
     return Scaffold(
       appBar: AppBar(
@@ -131,7 +156,7 @@ class _EditionScreenState extends State<EditionScreen> {
                 const SizedBox(height: 8),
                 Text(
                   _error!,
-                  style: TextStyle(
+                  style: textTheme.bodyMedium?.copyWith(
                     color: Theme.of(context).colorScheme.error,
                     fontWeight: FontWeight.w600,
                   ),
@@ -144,83 +169,29 @@ class _EditionScreenState extends State<EditionScreen> {
                 icon: const Icon(Icons.lock_outline),
                 label: const Text('Cerrar edición'),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF454C61),
+                  foregroundColor: AppColors.closed,
+                ),
+              ),
+              const SizedBox(height: 16),
+            ] else ...[
+              Text(
+                'Edición cerrada: solo lectura. Cuenta como historial para las recomendaciones.',
+                style: textTheme.bodyMedium?.copyWith(
+                  color: AppColors.mutedText,
                 ),
               ),
               const SizedBox(height: 16),
             ],
             if (_shownInvitation != null) ...[
-              Card(
-                color: const Color(0xFFFFF3DC),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  side: const BorderSide(color: Color(0xFFF0C572)),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'Invitación para frecuentes',
-                            style: TextStyle(
-                              color: Color(0xFFA96C05),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.close, size: 20),
-                            onPressed: () {
-                              setState(() {
-                                _shownInvitation = null;
-                                _shownEmails = null;
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      SelectableText(
-                        _shownInvitation!,
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                      if (_shownEmails != null && _shownEmails!.isNotEmpty) ...[
-                        const SizedBox(height: 12),
-                        const Text(
-                          'Destinatarios:',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        SelectableText(
-                          _shownEmails!.join(', '),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
+              InvitationBox(
+                text: _shownInvitation!,
+                emails: _shownEmails ?? [],
+                onClose: _hideInvitation,
               ),
               const SizedBox(height: 16),
             ],
             if (_edition.status != 'closed') ...[
-              Text(
-                'Recomendaciones',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
+              Text('Recomendaciones', style: textTheme.titleLarge),
               const SizedBox(height: 12),
               if (history.length < 2)
                 Card(
@@ -228,8 +199,8 @@ class _EditionScreenState extends State<EditionScreen> {
                     padding: const EdgeInsets.all(16),
                     child: Text(
                       'Se necesitan 2 ediciones cerradas para recomendar. Esta serie tiene ${history.length}.',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: AppColors.mutedText,
                       ),
                     ),
                   ),
@@ -240,8 +211,8 @@ class _EditionScreenState extends State<EditionScreen> {
                     padding: const EdgeInsets.all(16),
                     child: Text(
                       'Sin recomendaciones: esta edición ya recoge lo aprendido.',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: AppColors.mutedText,
                       ),
                     ),
                   ),
@@ -255,36 +226,33 @@ class _EditionScreenState extends State<EditionScreen> {
                   ),
               const SizedBox(height: 20),
             ],
-            Text(
-              'Detalles de la edición',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
+            Text('Detalles de la edición', style: textTheme.titleLarge),
             const SizedBox(height: 12),
             SectionButton(
               icon: Icons.description_outlined,
               title: 'Formulario de inscripción',
               detail: '${_edition.fields.length} preguntas',
-              onTap: () {},
+              onTap: () => _openSection('/editions/form'),
             ),
             SectionButton(
               icon: Icons.message_outlined,
               title: 'Mensajes',
-              detail: '${_edition.messages.length} mensajes',
-              onTap: () {},
+              detail:
+                  '${sentCount(_edition)} de ${_edition.messages.length} enviados',
+              onTap: () => _openSection('/editions/messages'),
             ),
             SectionButton(
               icon: Icons.checklist_outlined,
               title: 'Tareas',
-              detail: '${_edition.tasks.length} tareas',
-              onTap: () {},
+              detail: tasksSummary(_edition, today),
+              onTap: () => _openSection('/editions/tasks'),
             ),
             SectionButton(
               icon: Icons.people_outline,
               title: 'Registro de asistencia',
-              detail: '$attendedCount de ${_edition.registrations.length} asistieron',
-              onTap: () {},
+              detail:
+                  '${attendedCount(_edition)} de ${_edition.registrations.length} asistieron',
+              onTap: () => _openSection('/editions/attendance'),
             ),
           ],
         ),
