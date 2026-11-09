@@ -50,7 +50,7 @@ List<Recommendation> buildRecommendations(
   final ratePercent = (rate * 100).round();
 
   if (!wasDecided('R1', '')) {
-    if (rate < 0.9) {
+    if (rate > 0 && rate < 0.9) {
       final suggested = (edition.capacity / rate).floor();
       if (edition.quota < suggested) {
         recs.add(Recommendation(
@@ -81,7 +81,8 @@ List<Recommendation> buildRecommendations(
           .firstOrNull;
       if (ht == null) continue;
       final due = dueDate(he.dateTime, ht.offsetDays);
-      final delay = daysBetween(due, ht.doneAt!);
+      final rawDelay = daysBetween(due, ht.doneAt!);
+      final delay = rawDelay < 0 ? 0 : rawDelay;
       allDelays.add(delay);
       if (delay > 0) lateCount++;
     }

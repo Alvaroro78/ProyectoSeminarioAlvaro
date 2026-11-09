@@ -8,6 +8,8 @@ import 'package:proyecto_seminario_alvaro/logic/savings.dart';
 import 'package:proyecto_seminario_alvaro/logic/templates.dart';
 import 'package:proyecto_seminario_alvaro/models/edition.dart';
 import 'package:proyecto_seminario_alvaro/models/event_series.dart';
+import 'package:proyecto_seminario_alvaro/models/event_task.dart';
+import 'package:proyecto_seminario_alvaro/models/registration.dart';
 
 void main() {
   final today = DateTime(2026, 11, 8);
@@ -298,5 +300,179 @@ void main() {
 
     final edC1 = published.firstWhere((e) => e.seriesId == 'seriesC');
     expect(freeSpots(edC1), 0);
+  });
+
+  test('Serie con 2 ediciones cerradas sin asistentes no da R1 ni lanza error', () {
+    final edClosed1 = Edition(
+      id: 'edZ1',
+      seriesId: 'seriesZ',
+      sourceEditionId: null,
+      number: 1,
+      dateTime: DateTime(2026, 9, 1),
+      place: 'Lugar',
+      capacity: 20,
+      quota: 20,
+      status: 'closed',
+      fields: const [],
+      messages: const [],
+      tasks: const [],
+      registrations: [
+        Registration(
+          id: 'regZ1',
+          userId: 'p01',
+          userName: 'Ana',
+          userEmail: 'ana@correo.co',
+          code: 'R1-001',
+          registeredAt: DateTime(2026, 8, 25),
+          attended: false,
+          answers: const {},
+        ),
+      ],
+      decisions: const [],
+    );
+    final edClosed2 = Edition(
+      id: 'edZ2',
+      seriesId: 'seriesZ',
+      sourceEditionId: 'edZ1',
+      number: 2,
+      dateTime: DateTime(2026, 10, 1),
+      place: 'Lugar',
+      capacity: 20,
+      quota: 20,
+      status: 'closed',
+      fields: const [],
+      messages: const [],
+      tasks: const [],
+      registrations: [
+        Registration(
+          id: 'regZ2',
+          userId: 'p02',
+          userName: 'Juan',
+          userEmail: 'juan@correo.co',
+          code: 'R2-001',
+          registeredAt: DateTime(2026, 9, 25),
+          attended: false,
+          answers: const {},
+        ),
+      ],
+      decisions: const [],
+    );
+    final edDraft3 = Edition(
+      id: 'edZ3',
+      seriesId: 'seriesZ',
+      sourceEditionId: 'edZ2',
+      number: 3,
+      dateTime: DateTime(2026, 12, 1),
+      place: 'Lugar',
+      capacity: 20,
+      quota: 20,
+      status: 'draft',
+      fields: const [],
+      messages: const [],
+      tasks: const [],
+      registrations: const [],
+      decisions: const [],
+    );
+    final seriesZ = EventSeries(
+      id: 'seriesZ',
+      organizerId: 'u-laura',
+      name: 'Serie sin asistentes',
+      description: 'Prueba',
+      editions: [edClosed1, edClosed2, edDraft3],
+    );
+
+    final recs = buildRecommendations(seriesZ, edDraft3);
+    final r1 = recs.where((r) => r.rule == 'R1').toList();
+    expect(r1.isEmpty, true);
+  });
+
+  test('Tarea con retrasos -3, 2 y 2 sugiere adelantar 2 días', () {
+    EventTask taskForEd(String id, DateTime eventDate, int offsetDays, int delay) {
+      final due = dueDate(eventDate, offsetDays);
+      return EventTask(
+        id: id,
+        title: 'Comprar materiales',
+        owner: 'Logística',
+        offsetDays: offsetDays,
+        doneAt: DateTime(due.year, due.month, due.day + delay),
+        inherited: false,
+      );
+    }
+
+    final d1 = DateTime(2026, 8, 1);
+    final d2 = DateTime(2026, 9, 1);
+    final d3 = DateTime(2026, 10, 1);
+    final d4 = DateTime(2026, 11, 15);
+
+    Edition makeClosed(int num, DateTime dt, int delay) {
+      return Edition(
+        id: 'edT$num',
+        seriesId: 'seriesT',
+        number: num,
+        dateTime: dt,
+        place: 'Lugar',
+        capacity: 20,
+        quota: 20,
+        status: 'closed',
+        fields: const [],
+        messages: const [],
+        tasks: [taskForEd('taskT$num', dt, -10, delay)],
+        registrations: [
+          Registration(
+            id: 'regT$num',
+            userId: 'p01',
+            userName: 'Ana',
+            userEmail: 'ana@correo.co',
+            code: 'R$num-001',
+            registeredAt: DateTime(2026, 7, 1),
+            attended: true,
+            answers: const {},
+          ),
+        ],
+        decisions: const [],
+      );
+    }
+
+    final ed1 = makeClosed(1, d1, -3);
+    final ed2 = makeClosed(2, d2, 2);
+    final ed3 = makeClosed(3, d3, 2);
+
+    final ed4 = Edition(
+      id: 'edT4',
+      seriesId: 'seriesT',
+      number: 4,
+      dateTime: d4,
+      place: 'Lugar',
+      capacity: 20,
+      quota: 20,
+      status: 'draft',
+      fields: const [],
+      messages: const [],
+      tasks: const [
+        EventTask(
+          id: 'taskT4',
+          title: 'Comprar materiales',
+          owner: 'Logística',
+          offsetDays: -10,
+          doneAt: null,
+          inherited: true,
+        ),
+      ],
+      registrations: const [],
+      decisions: const [],
+    );
+
+    final seriesT = EventSeries(
+      id: 'seriesT',
+      organizerId: 'u-laura',
+      name: 'Serie Tareas',
+      description: 'Prueba',
+      editions: [ed1, ed2, ed3, ed4],
+    );
+
+    final recs = buildRecommendations(seriesT, ed4);
+    final r2 = recs.where((r) => r.rule == 'R2' && r.reference == 'Comprar materiales').toList();
+    expect(r2.length, 1);
+    expect(r2.first.value, -12);
   });
 }
