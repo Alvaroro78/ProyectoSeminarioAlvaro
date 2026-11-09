@@ -51,6 +51,23 @@ class _OrganizerMainScreenState extends State<OrganizerMainScreen> {
     }
   }
 
+  Future<void> _openSeries(EventSeries series) async {
+    final updated = await Navigator.pushNamed(
+      context,
+      '/series',
+      arguments: series,
+    );
+
+    if (updated is EventSeries && mounted) {
+      setState(() {
+        final index = _series.indexWhere((s) => s.id == updated.id);
+        if (index >= 0) {
+          _series[index] = updated;
+        }
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!_initialized) {
@@ -69,7 +86,7 @@ class _OrganizerMainScreenState extends State<OrganizerMainScreen> {
           children: [
             SeriesPage(
               series: _series,
-              onOpen: (s) {},
+              onOpen: _openSeries,
             ),
             ProfilePage(
               user: _user,
