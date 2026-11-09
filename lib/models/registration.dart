@@ -1,4 +1,4 @@
-/// A registration for an edition (includes answers to the form).
+/// A registration for an edition.
 class Registration {
   final String id;
   final String userId;
@@ -20,7 +20,6 @@ class Registration {
     required this.answers,
   });
 
-  /// Returns a copy with the given fields replaced.
   Registration copyWith({
     String? id,
     String? userId,

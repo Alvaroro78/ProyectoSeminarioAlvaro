@@ -1,10 +1,10 @@
-/// A user account (organizer or attendee).
+/// A user account.
 class AppUser {
   final String id;
   final String name;
   final String email;
   final String password;
-  final String role; // 'organizer' or 'attendee'
+  final String role;
 
   const AppUser({
     required this.id,
@@ -14,7 +14,6 @@ class AppUser {
     required this.role,
   });
 
-  /// Returns a copy with the given fields replaced.
   AppUser copyWith({
     String? id,
     String? name,

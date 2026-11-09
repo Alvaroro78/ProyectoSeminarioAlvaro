@@ -1,8 +1,5 @@
 import 'package:proyecto_seminario_alvaro/models/edition.dart';
 
-/// Returns the percentage of elements inherited from the source edition.
-/// Elements = fields + messages + tasks.
-/// Returns 0 if there are no elements at all.
 int reusedPercent(Edition edition) {
   final total =
       edition.fields.length + edition.messages.length + edition.tasks.length;

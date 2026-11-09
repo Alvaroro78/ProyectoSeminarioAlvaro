@@ -1,6 +1,6 @@
 /// A decision on a recommendation for an edition.
 class Decision {
-  final String rule; // 'R1', 'R2', 'R3', 'R4', 'R5'
+  final String rule;
   final String reference;
   final bool accepted;
   final DateTime decidedAt;
@@ -12,7 +12,6 @@ class Decision {
     required this.decidedAt,
   });
 
-  /// Returns a copy with the given fields replaced.
   Decision copyWith({
     String? rule,
     String? reference,

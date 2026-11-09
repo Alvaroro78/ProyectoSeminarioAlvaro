@@ -1,16 +1,10 @@
-import 'dart:math';
-
+import 'package:proyecto_seminario_alvaro/logic/dates.dart';
 import 'package:proyecto_seminario_alvaro/models/decision.dart';
 import 'package:proyecto_seminario_alvaro/models/edition.dart';
 import 'package:proyecto_seminario_alvaro/models/event_series.dart';
 import 'package:proyecto_seminario_alvaro/models/event_task.dart';
 import 'package:proyecto_seminario_alvaro/models/recommendation.dart';
-import 'package:proyecto_seminario_alvaro/logic/dates.dart';
-import 'package:proyecto_seminario_alvaro/logic/savings.dart';
-import 'package:proyecto_seminario_alvaro/logic/templates.dart';
 
-/// Returns the history for [edition]: the 3 latest closed editions of [series]
-/// with a number smaller than [edition.number], sorted ascending.
 List<Edition> historyFor(EventSeries series, Edition edition) {
   final closed = series.editions
       .where((e) => e.status == 'closed' && e.number < edition.number)
@@ -20,8 +14,6 @@ List<Edition> historyFor(EventSeries series, Edition edition) {
   return closed.sublist(closed.length - 3);
 }
 
-/// Returns the attendance rate of [history]: total attended / total registered.
-/// Returns 0 if no registrations.
 double attendanceRate(List<Edition> history) {
   final totalRegistered =
       history.fold<int>(0, (s, e) => s + e.registrations.length);
@@ -33,8 +25,6 @@ double attendanceRate(List<Edition> history) {
   return totalAttended / totalRegistered;
 }
 
-/// Builds all applicable recommendations for [edition] in [series],
-/// excluding those already decided.
 List<Recommendation> buildRecommendations(
   EventSeries series,
   Edition edition,
@@ -59,7 +49,6 @@ List<Recommendation> buildRecommendations(
   );
   final ratePercent = (rate * 100).round();
 
-  // ── R1 · Quota ──────────────────────────────────────────────────────────────
   if (!wasDecided('R1', '')) {
     if (rate < 0.9) {
       final suggested = (edition.capacity / rate).floor();
@@ -80,18 +69,10 @@ List<Recommendation> buildRecommendations(
     }
   }
 
-  // ── R2 · Tasks that run late ─────────────────────────────────────────────
   for (final task in edition.tasks) {
-    if (task.doneAt != null) continue; // already done in this edition
+    if (task.doneAt != null) continue;
     if (wasDecided('R2', task.title)) continue;
 
-    // Find editions in history that have a task with the same title and it was done
-    final historyEditionsWithTask = history
-        .where((e) => e.tasks.any((t) => t.title == task.title && t.doneAt != null))
-        .toList();
-
-    // Count how many of those were late, and collect delays for all history editions
-    // with the task (including on-time ones) for average calculation
     final allDelays = <int>[];
     int lateCount = 0;
     for (final he in history) {
@@ -107,10 +88,9 @@ List<Recommendation> buildRecommendations(
 
     if (lateCount < 2) continue;
 
-    // Average over ALL history editions where the task existed (including on-time)
     final avgDelay = allDelays.fold<int>(0, (s, d) => s + d) / allDelays.length;
     final suggested = task.offsetDays - avgDelay.ceil();
-    if (suggested >= task.offsetDays) continue; // no improvement
+    if (suggested >= task.offsetDays) continue;
 
     recs.add(Recommendation(
       rule: 'R2',
@@ -124,17 +104,14 @@ List<Recommendation> buildRecommendations(
     ));
   }
 
-  // ── R3 · Questions that almost nobody answers ────────────────────────────
   for (final field in edition.fields) {
     if (field.isRequired) continue;
     if (wasDecided('R3', field.label)) continue;
 
-    // Check no one answered it in the current edition
     final answeredInCurrent = edition.registrations
         .any((r) => (r.answers[field.id] ?? '').trim().isNotEmpty);
     if (answeredInCurrent) continue;
 
-    // Find history editions that have a field with the same label
     final histEditionsWithField = <Edition>[];
     for (final he in history) {
       if (he.fields.any((f) => f.label == field.label)) {
@@ -147,7 +124,6 @@ List<Recommendation> buildRecommendations(
       0,
       (s, e) => s + e.registrations.length,
     );
-    // Edge case: if total inscribed is 0, skip (undefined rate)
     if (totalInscritos == 0) continue;
 
     int totalResponded = 0;
@@ -173,7 +149,6 @@ List<Recommendation> buildRecommendations(
     ));
   }
 
-  // ── R4 · Frequent attendees (handled separately in F-09, included here) ──
   if (!wasDecided('R4', '')) {
     final frequentPeople = _frequentAttendees(history, edition);
     if (frequentPeople.isNotEmpty) {
@@ -190,7 +165,6 @@ List<Recommendation> buildRecommendations(
     }
   }
 
-  // ── R5 · Expected attendance ─────────────────────────────────────────────
   if (!wasDecided('R5', '')) {
     final inscribed = edition.registrations.length;
     if (inscribed > 0) {
@@ -211,15 +185,12 @@ List<Recommendation> buildRecommendations(
   return recs;
 }
 
-/// Returns list of "Name · email" for people who attended 2+ editions in [history]
-/// and are not yet registered in [edition].
 List<String> _frequentAttendees(List<Edition> history, Edition edition) {
   final registeredUserIds =
       edition.registrations.map((r) => r.userId).toSet();
 
-  // Count attendance per userId
   final attendanceCount = <String, int>{};
-  final userInfo = <String, (String, String)>{}; // userId → (name, email)
+  final userInfo = <String, (String, String)>{};
   for (final he in history) {
     for (final reg in he.registrations) {
       if (reg.attended) {
@@ -237,12 +208,10 @@ List<String> _frequentAttendees(List<Edition> history, Edition edition) {
     }
   }
 
-  // Sort by name
   frequent.sort((a, b) => a.compareTo(b));
   return frequent;
 }
 
-/// Applies [rec] to [edition] and records the decision. Returns the updated edition.
 Edition acceptRecommendation(
   Edition edition,
   Recommendation rec,
@@ -276,7 +245,6 @@ Edition acceptRecommendation(
     case 'R3':
       final fields =
           edition.fields.where((f) => f.label != rec.reference).toList();
-      // Recalculate order
       final reordered = [
         for (var i = 0; i < fields.length; i++)
           fields[i].copyWith(order: i + 1),
@@ -311,7 +279,6 @@ Edition acceptRecommendation(
   return updated;
 }
 
-/// Records a discard decision for [rec] in [edition]. Returns the updated edition.
 Edition discardRecommendation(
   Edition edition,
   Recommendation rec,

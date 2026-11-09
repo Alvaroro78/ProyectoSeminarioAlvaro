@@ -1,16 +1,20 @@
-/// Navigation arguments for a screen that works with one edition.
+import 'package:proyecto_seminario_alvaro/models/app_user.dart';
+import 'package:proyecto_seminario_alvaro/models/edition.dart';
+import 'package:proyecto_seminario_alvaro/models/event_series.dart';
+
+/// Navigation arguments for an edition screen.
 class EditionArgs {
-  final dynamic series; // EventSeries — imported lazily to avoid circular deps
-  final dynamic edition; // Edition
+  final EventSeries series;
+  final Edition edition;
 
   const EditionArgs({required this.series, required this.edition});
 }
 
-/// Navigation arguments for the event detail screen (attendee side).
+/// Navigation arguments for the event detail screen.
 class EventArgs {
-  final dynamic series; // EventSeries
-  final dynamic edition; // Edition
-  final dynamic user; // AppUser
+  final EventSeries series;
+  final Edition edition;
+  final AppUser user;
 
   const EventArgs({
     required this.series,

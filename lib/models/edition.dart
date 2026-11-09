@@ -1,8 +1,8 @@
-import 'package:proyecto_seminario_alvaro/models/registration_field.dart';
+import 'package:proyecto_seminario_alvaro/models/decision.dart';
 import 'package:proyecto_seminario_alvaro/models/event_message.dart';
 import 'package:proyecto_seminario_alvaro/models/event_task.dart';
 import 'package:proyecto_seminario_alvaro/models/registration.dart';
-import 'package:proyecto_seminario_alvaro/models/decision.dart';
+import 'package:proyecto_seminario_alvaro/models/registration_field.dart';
 
 /// One occurrence of a recurring event series.
 class Edition {
@@ -14,7 +14,7 @@ class Edition {
   final String place;
   final int capacity;
   final int quota;
-  final String status; // 'draft', 'published', 'closed'
+  final String status;
   final List<RegistrationField> fields;
   final List<EventMessage> messages;
   final List<EventTask> tasks;
@@ -38,7 +38,6 @@ class Edition {
     required this.decisions,
   });
 
-  /// Returns a copy with the given fields replaced.
   Edition copyWith({
     String? id,
     String? seriesId,

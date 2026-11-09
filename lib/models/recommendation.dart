@@ -1,12 +1,12 @@
-/// A calculated recommendation for an edition (not persisted).
+/// A calculated recommendation for an edition.
 class Recommendation {
-  final String rule; // 'R1', 'R2', 'R3', 'R4', 'R5'
+  final String rule;
   final String reference;
   final String title;
   final String evidence;
   final String actionLabel;
   final int? value;
-  final List<String> people; // 'Name · email'
+  final List<String> people;
 
   const Recommendation({
     required this.rule,
@@ -18,7 +18,6 @@ class Recommendation {
     this.people = const [],
   });
 
-  /// Returns a copy with the given fields replaced.
   Recommendation copyWith({
     String? rule,
     String? reference,

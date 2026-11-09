@@ -16,7 +16,6 @@ class EventSeries {
     required this.editions,
   });
 
-  /// Returns a copy with the given fields replaced.
   EventSeries copyWith({
     String? id,
     String? organizerId,

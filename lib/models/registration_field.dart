@@ -2,7 +2,7 @@
 class RegistrationField {
   final String id;
   final String label;
-  final String type; // 'text', 'number', 'yesNo'
+  final String type;
   final bool isRequired;
   final int order;
   final bool inherited;
@@ -16,7 +16,6 @@ class RegistrationField {
     required this.inherited,
   });
 
-  /// Returns a copy with the given fields replaced.
   RegistrationField copyWith({
     String? id,
     String? label,

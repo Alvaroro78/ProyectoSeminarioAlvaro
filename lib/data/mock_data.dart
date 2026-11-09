@@ -6,10 +6,8 @@ import 'package:proyecto_seminario_alvaro/models/event_task.dart';
 import 'package:proyecto_seminario_alvaro/models/registration.dart';
 import 'package:proyecto_seminario_alvaro/models/registration_field.dart';
 
-/// Builds the list of all mock users.
 List<AppUser> buildMockUsers() {
   return [
-    // Organizers
     const AppUser(
       id: 'u-laura',
       name: 'Laura Gómez',
@@ -24,7 +22,6 @@ List<AppUser> buildMockUsers() {
       password: '123456',
       role: 'organizer',
     ),
-    // Attendees p01–p25
     const AppUser(
       id: 'p01',
       name: 'Ana María Torres',
@@ -203,14 +200,10 @@ List<AppUser> buildMockUsers() {
   ];
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
 DateTime _date(DateTime today, int offsetDays) {
   return DateTime(today.year, today.month, today.day + offsetDays, 18, 0);
 }
 
-/// Registration date rule: event date − (2 + i % 10) days.
-/// i is the person index (1-based: p01 → 1).
 DateTime _regDate(DateTime eventDate, int i) {
   return DateTime(
     eventDate.year,
@@ -219,12 +212,10 @@ DateTime _regDate(DateTime eventDate, int i) {
   );
 }
 
-// ─── Serie A fields (shared across editions 1–4) ─────────────────────────────
-
 List<RegistrationField> _seriesAFields({required bool inherited}) {
   return [
     RegistrationField(
-        id: 'fA1', label: 'Celular', type: 'text', isRequired: true,  order: 1, inherited: inherited),
+        id: 'fA1', label: 'Celular', type: 'text', isRequired: true, order: 1, inherited: inherited),
     RegistrationField(
         id: 'fA2', label: 'Empresa u organización', type: 'text', isRequired: false, order: 2, inherited: inherited),
     RegistrationField(
@@ -237,10 +228,6 @@ List<RegistrationField> _seriesAFields({required bool inherited}) {
         id: 'fA6', label: '¿Tienes alguna restricción alimentaria?', type: 'text', isRequired: false, order: 6, inherited: inherited),
   ];
 }
-
-// Field fA6 only exists in edition 4, non-inherited.
-
-// ─── Serie A messages ────────────────────────────────────────────────────────
 
 EventMessage _invMsg({required bool sent, required bool inherited, required String edId}) =>
     EventMessage(
@@ -278,42 +265,31 @@ EventMessage _thanksMsg({required bool sent, required bool inherited, required S
       inherited: inherited,
     );
 
-// ─── Answer builder ───────────────────────────────────────────────────────────
-// Person index i (1-based). Fields fA1–fA5 for eds 1-3; fA1–fA6 for ed4.
-
 Map<String, String> _answers(int i, {bool hasF6 = false}) {
   final m = <String, String>{};
-  // fA1: all respond
   m['fA1'] = '300 555 01${i.toString().padLeft(2, '0')}';
-  // fA2: i % 4 != 0
   if (i % 4 != 0) m['fA2'] = 'Organización $i';
-  // fA3: i % 7 == 0
   if (i % 7 == 0) m['fA3'] = 'Analista de datos';
-  // fA4: i % 6 == 0
   if (i % 6 == 0) m['fA4'] = 'Por un colega';
-  // fA5: i odd
   if (i % 2 != 0) m['fA5'] = (i % 4 == 1) ? 'Sí' : 'No';
-  // fA6: only ed4, i % 5 == 0
   if (hasF6 && i % 5 == 0) m['fA6'] = 'Vegetariano';
   return m;
 }
 
-// ─── Registration builder ─────────────────────────────────────────────────────
-
 Registration _reg(
-  int personIndex, // 1-based (p01 → 1)
+  int personIndex,
   String userId,
   String userName,
   String userEmail,
-  String editionNumber, // '1', '2', etc.
-  int consecutiveInEdition, // 1-based within edition
+  String editionNumber,
+  int consecutiveInEdition,
   DateTime eventDate,
   bool attended, {
   bool hasF6 = false,
 }) {
   final code = 'R$editionNumber-${consecutiveInEdition.toString().padLeft(3, '0')}';
   return Registration(
-    id: 'reg-${userId}-ed$editionNumber',
+    id: 'reg-$userId-ed$editionNumber',
     userId: userId,
     userName: userName,
     userEmail: userEmail,
@@ -324,11 +300,6 @@ Registration _reg(
   );
 }
 
-// ─── Task builder ─────────────────────────────────────────────────────────────
-
-/// Builds an edition-specific task with its doneAt date.
-/// [delay] is the signed offset in days beyond the due date (negative = early).
-/// If delay is provided but the task is considered not done, pass doneAt = null.
 EventTask _task({
   required String id,
   required String title,
@@ -336,7 +307,7 @@ EventTask _task({
   required int offsetDays,
   required bool inherited,
   DateTime? eventDate,
-  int? delay, // null = not done
+  int? delay,
 }) {
   DateTime? doneAt;
   if (delay != null && eventDate != null) {
@@ -356,8 +327,6 @@ EventTask _task({
     inherited: inherited,
   );
 }
-
-// ─── User info lookup ─────────────────────────────────────────────────────────
 
 const _users = {
   'p01': ('Ana María Torres', 'ana.torres@correo.co'),
@@ -389,19 +358,14 @@ const _users = {
 
 String _uName(String id) => _users[id]!.$1;
 String _uEmail(String id) => _users[id]!.$2;
-int _uIndex(String id) => int.parse(id.substring(1)); // 'p07' → 7
+int _uIndex(String id) => int.parse(id.substring(1));
 
-// ─── Main builder ─────────────────────────────────────────────────────────────
-
-/// Builds all mock series with dates relative to [today].
 List<EventSeries> buildMockSeries(DateTime today) {
-  // ── SERIE A: Ciclo de charlas de analítica de datos ────────────────────────
-  final dateA1 = _date(today, -84); // hoy − 84 = 16 ago
-  final dateA2 = _date(today, -56); // hoy − 56 = 13 sep
-  final dateA3 = _date(today, -28); // hoy − 28 = 11 oct
-  final dateA4 = _date(today, 7);   // hoy + 7  = 15 nov
+  final dateA1 = _date(today, -84);
+  final dateA2 = _date(today, -56);
+  final dateA3 = _date(today, -28);
+  final dateA4 = _date(today, 7);
 
-  // Edition 1: p01–p20 inscribed (20), p01–p14 attended (14). All inherited=false.
   final ed1Ids = ['p01','p02','p03','p04','p05','p06','p07','p08',
                    'p09','p10','p11','p12','p13','p14','p15','p16',
                    'p17','p18','p19','p20'];
@@ -435,10 +399,10 @@ List<EventSeries> buildMockSeries(DateTime today) {
       _thanksMsg(sent: true, inherited: false, edId: 'edA1'),
     ],
     tasks: [
-      _task(id: 'tA1-1', title: 'Reservar el auditorio',    owner: 'Laura', offsetDays: -21, inherited: false, eventDate: dateA1, delay: 4),
+      _task(id: 'tA1-1', title: 'Reservar el auditorio', owner: 'Laura', offsetDays: -21, inherited: false, eventDate: dateA1, delay: 4),
       _task(id: 'tA1-2', title: 'Confirmar al conferencista', owner: 'Laura', offsetDays: -14, inherited: false, eventDate: dateA1, delay: -1),
-      _task(id: 'tA1-3', title: 'Publicar la invitación',   owner: 'Comunicaciones', offsetDays: -10, inherited: false, eventDate: dateA1, delay: 3),
-      _task(id: 'tA1-4', title: 'Pedir los refrigerios',    owner: 'Logística', offsetDays: -3, inherited: false, eventDate: dateA1, delay: 0),
+      _task(id: 'tA1-3', title: 'Publicar la invitación', owner: 'Comunicaciones', offsetDays: -10, inherited: false, eventDate: dateA1, delay: 3),
+      _task(id: 'tA1-4', title: 'Pedir los refrigerios', owner: 'Logística', offsetDays: -3, inherited: false, eventDate: dateA1, delay: 0),
       _task(id: 'tA1-5', title: 'Imprimir la lista de asistencia', owner: 'Logística', offsetDays: -1, inherited: false, eventDate: dateA1, delay: 0),
       _task(id: 'tA1-6', title: 'Enviar el agradecimiento', owner: 'Comunicaciones', offsetDays: 2, inherited: false, eventDate: dateA1, delay: 0),
     ],
@@ -446,7 +410,6 @@ List<EventSeries> buildMockSeries(DateTime today) {
     decisions: [],
   );
 
-  // Edition 2: p03–p22 inscribed (20), p03–p16 attended (14). All inherited=true.
   final ed2Ids = ['p03','p04','p05','p06','p07','p08','p09','p10',
                    'p11','p12','p13','p14','p15','p16','p17','p18',
                    'p19','p20','p21','p22'];
@@ -480,10 +443,10 @@ List<EventSeries> buildMockSeries(DateTime today) {
       _thanksMsg(sent: true, inherited: true, edId: 'edA2'),
     ],
     tasks: [
-      _task(id: 'tA2-1', title: 'Reservar el auditorio',    owner: 'Laura', offsetDays: -21, inherited: true, eventDate: dateA2, delay: 3),
+      _task(id: 'tA2-1', title: 'Reservar el auditorio', owner: 'Laura', offsetDays: -21, inherited: true, eventDate: dateA2, delay: 3),
       _task(id: 'tA2-2', title: 'Confirmar al conferencista', owner: 'Laura', offsetDays: -14, inherited: true, eventDate: dateA2, delay: 0),
-      _task(id: 'tA2-3', title: 'Publicar la invitación',   owner: 'Comunicaciones', offsetDays: -10, inherited: true, eventDate: dateA2, delay: 2),
-      _task(id: 'tA2-4', title: 'Pedir los refrigerios',    owner: 'Logística', offsetDays: -3, inherited: true, eventDate: dateA2, delay: 1),
+      _task(id: 'tA2-3', title: 'Publicar la invitación', owner: 'Comunicaciones', offsetDays: -10, inherited: true, eventDate: dateA2, delay: 2),
+      _task(id: 'tA2-4', title: 'Pedir los refrigerios', owner: 'Logística', offsetDays: -3, inherited: true, eventDate: dateA2, delay: 1),
       _task(id: 'tA2-5', title: 'Imprimir la lista de asistencia', owner: 'Logística', offsetDays: -1, inherited: true, eventDate: dateA2, delay: 0),
       _task(id: 'tA2-6', title: 'Enviar el agradecimiento', owner: 'Comunicaciones', offsetDays: 2, inherited: true, eventDate: dateA2, delay: 2),
     ],
@@ -491,7 +454,6 @@ List<EventSeries> buildMockSeries(DateTime today) {
     decisions: [],
   );
 
-  // Edition 3: p05–p22 inscribed (18), p05–p17 attended (13). All inherited=true.
   final ed3Ids = ['p05','p06','p07','p08','p09','p10','p11','p12',
                    'p13','p14','p15','p16','p17','p18','p19','p20',
                    'p21','p22'];
@@ -525,10 +487,10 @@ List<EventSeries> buildMockSeries(DateTime today) {
       _thanksMsg(sent: true, inherited: true, edId: 'edA3'),
     ],
     tasks: [
-      _task(id: 'tA3-1', title: 'Reservar el auditorio',    owner: 'Laura', offsetDays: -21, inherited: true, eventDate: dateA3, delay: 5),
+      _task(id: 'tA3-1', title: 'Reservar el auditorio', owner: 'Laura', offsetDays: -21, inherited: true, eventDate: dateA3, delay: 5),
       _task(id: 'tA3-2', title: 'Confirmar al conferencista', owner: 'Laura', offsetDays: -14, inherited: true, eventDate: dateA3, delay: -2),
-      _task(id: 'tA3-3', title: 'Publicar la invitación',   owner: 'Comunicaciones', offsetDays: -10, inherited: true, eventDate: dateA3, delay: 4),
-      _task(id: 'tA3-4', title: 'Pedir los refrigerios',    owner: 'Logística', offsetDays: -3, inherited: true, eventDate: dateA3, delay: 0),
+      _task(id: 'tA3-3', title: 'Publicar la invitación', owner: 'Comunicaciones', offsetDays: -10, inherited: true, eventDate: dateA3, delay: 4),
+      _task(id: 'tA3-4', title: 'Pedir los refrigerios', owner: 'Logística', offsetDays: -3, inherited: true, eventDate: dateA3, delay: 0),
       _task(id: 'tA3-5', title: 'Imprimir la lista de asistencia', owner: 'Logística', offsetDays: -1, inherited: true, eventDate: dateA3, delay: -1),
       _task(id: 'tA3-6', title: 'Enviar el agradecimiento', owner: 'Comunicaciones', offsetDays: 2, inherited: true, eventDate: dateA3, delay: 1),
     ],
@@ -536,10 +498,6 @@ List<EventSeries> buildMockSeries(DateTime today) {
     decisions: [],
   );
 
-  // Edition 4: p05–p12 inscribed (8), nobody attended yet. Fields 1-5 inherited, fA6 not inherited.
-  // Task "Reservar el auditorio" done with delay +3 (D-18).
-  // Task "Confirmar al conferencista" done with delay 0 (D-14).
-  // Others pending.
   final ed4Ids = ['p05','p06','p07','p08','p09','p10','p11','p12'];
 
   final regs4 = [
@@ -548,7 +506,7 @@ List<EventSeries> buildMockSeries(DateTime today) {
         _uIndex(ed4Ids[i]),
         ed4Ids[i], _uName(ed4Ids[i]), _uEmail(ed4Ids[i]),
         '4', i + 1, dateA4,
-        false, // nobody attended yet
+        false,
         hasF6: true,
       ),
   ];
@@ -565,24 +523,24 @@ List<EventSeries> buildMockSeries(DateTime today) {
     status: 'published',
     fields: [
       ..._seriesAFields(inherited: true).where((f) => f.id != 'fA6'),
-      RegistrationField(
+      const RegistrationField(
         id: 'fA6', label: '¿Tienes alguna restricción alimentaria?',
         type: 'text', isRequired: false, order: 6, inherited: false,
       ),
     ],
     messages: [
-      _invMsg(sent: true,  inherited: true, edId: 'edA4'),
+      _invMsg(sent: true, inherited: true, edId: 'edA4'),
       _remMsg(sent: false, inherited: true, edId: 'edA4'),
       _thanksMsg(sent: false, inherited: true, edId: 'edA4'),
     ],
     tasks: [
-      _task(id: 'tA4-1', title: 'Reservar el auditorio',    owner: 'Laura', offsetDays: -21, inherited: true, eventDate: dateA4, delay: 3),
+      _task(id: 'tA4-1', title: 'Reservar el auditorio', owner: 'Laura', offsetDays: -21, inherited: true, eventDate: dateA4, delay: 3),
       _task(id: 'tA4-2', title: 'Confirmar al conferencista', owner: 'Laura', offsetDays: -14, inherited: true, eventDate: dateA4, delay: 0),
-      _task(id: 'tA4-3', title: 'Publicar la invitación',   owner: 'Comunicaciones', offsetDays: -10, inherited: true), // pending
-      _task(id: 'tA4-4', title: 'Pedir los refrigerios',    owner: 'Logística', offsetDays: -3, inherited: true), // pending
-      _task(id: 'tA4-5', title: 'Imprimir la lista de asistencia', owner: 'Logística', offsetDays: -1, inherited: true), // pending
-      _task(id: 'tA4-6', title: 'Enviar el agradecimiento', owner: 'Comunicaciones', offsetDays: 2, inherited: true), // pending
-      _task(id: 'tA4-7', title: 'Probar el video beam',     owner: 'Logística', offsetDays: -1, inherited: false), // pending, not inherited
+      _task(id: 'tA4-3', title: 'Publicar la invitación', owner: 'Comunicaciones', offsetDays: -10, inherited: true),
+      _task(id: 'tA4-4', title: 'Pedir los refrigerios', owner: 'Logística', offsetDays: -3, inherited: true),
+      _task(id: 'tA4-5', title: 'Imprimir la lista de asistencia', owner: 'Logística', offsetDays: -1, inherited: true),
+      _task(id: 'tA4-6', title: 'Enviar el agradecimiento', owner: 'Comunicaciones', offsetDays: 2, inherited: true),
+      _task(id: 'tA4-7', title: 'Probar el video beam', owner: 'Logística', offsetDays: -1, inherited: false),
     ],
     registrations: regs4,
     decisions: [],
@@ -597,8 +555,7 @@ List<EventSeries> buildMockSeries(DateTime today) {
     editions: [edition1, edition2, edition3, edition4],
   );
 
-  // ── SERIE B: Taller trimestral de primeros auxilios ────────────────────────
-  final dateB1 = _date(today, -70); // hoy − 70 = 30 ago; keep time 09:00
+  final dateB1 = _date(today, -70);
   final dateB1At9 = DateTime(dateB1.year, dateB1.month, dateB1.day, 9, 0);
 
   final ed1BIds = ['p01','p02','p03','p04','p05','p06','p07','p08','p09','p10'];
@@ -631,9 +588,9 @@ List<EventSeries> buildMockSeries(DateTime today) {
     capacity: 15,
     quota: 15,
     status: 'closed',
-    fields: [
-      const RegistrationField(id: 'fB1', label: 'Celular', type: 'text', isRequired: true,  order: 1, inherited: false),
-      const RegistrationField(id: 'fB2', label: '¿Tienes formación previa en primeros auxilios?', type: 'yesNo', isRequired: false, order: 2, inherited: false),
+    fields: const [
+      RegistrationField(id: 'fB1', label: 'Celular', type: 'text', isRequired: true, order: 1, inherited: false),
+      RegistrationField(id: 'fB2', label: '¿Tienes formación previa en primeros auxilios?', type: 'yesNo', isRequired: false, order: 2, inherited: false),
     ],
     messages: [
       EventMessage(
@@ -656,9 +613,7 @@ List<EventSeries> buildMockSeries(DateTime today) {
       ),
     ],
     tasks: [
-      // "Reservar el salón": D-10, hecha en D-11 → delay = -1
       _task(id: 'tB1-1', title: 'Reservar el salón', owner: 'Laura', offsetDays: -10, inherited: false, eventDate: dateB1At9, delay: -1),
-      // "Conseguir los maniquíes": D-5, hecha en D-3 → delay = +2
       _task(id: 'tB1-2', title: 'Conseguir los maniquíes', owner: 'Logística', offsetDays: -5, inherited: false, eventDate: dateB1At9, delay: 2),
     ],
     registrations: regsB1,
@@ -674,8 +629,7 @@ List<EventSeries> buildMockSeries(DateTime today) {
     editions: [editionB1],
   );
 
-  // ── SERIE C: Club de lectura de ingeniería ─────────────────────────────────
-  final dateC1 = _date(today, 14); // hoy + 14 = 22 nov; keep time 19:00
+  final dateC1 = _date(today, 14);
   final dateC1At19 = DateTime(dateC1.year, dateC1.month, dateC1.day, 19, 0);
 
   final ed1CIds = ['p14','p15','p16','p17','p18','p19','p20','p21','p22','p23','p24','p25'];
@@ -696,8 +650,6 @@ List<EventSeries> buildMockSeries(DateTime today) {
       ),
   ];
 
-  // "Elegir el libro": D-21, hecha en D-25 → delay = -4 (early by 4)
-  // "Reservar la sala": D-7, pending
   final editionC1 = Edition(
     id: 'edC1',
     seriesId: 'seriesC',
@@ -708,8 +660,8 @@ List<EventSeries> buildMockSeries(DateTime today) {
     capacity: 12,
     quota: 12,
     status: 'published',
-    fields: [
-      const RegistrationField(id: 'fC1', label: 'Celular', type: 'text', isRequired: true, order: 1, inherited: false),
+    fields: const [
+      RegistrationField(id: 'fC1', label: 'Celular', type: 'text', isRequired: true, order: 1, inherited: false),
     ],
     messages: [
       EventMessage(

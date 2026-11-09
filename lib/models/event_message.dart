@@ -1,7 +1,7 @@
 /// A message template associated with an edition.
 class EventMessage {
   final String id;
-  final String type; // 'invitation', 'reminder', 'thanks', 'other'
+  final String type;
   final String subject;
   final String body;
   final int offsetDays;
@@ -18,7 +18,6 @@ class EventMessage {
     required this.inherited,
   });
 
-  /// Returns a copy with the given fields replaced.
   EventMessage copyWith({
     String? id,
     String? type,

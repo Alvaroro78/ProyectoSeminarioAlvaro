@@ -16,8 +16,6 @@ class EventTask {
     required this.inherited,
   });
 
-  /// Returns a copy with the given fields replaced.
-  /// Pass [clearDoneAt] = true to set [doneAt] to null.
   EventTask copyWith({
     String? id,
     String? title,

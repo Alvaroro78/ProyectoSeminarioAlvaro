@@ -1,18 +1,10 @@
-import 'dart:math';
-
-import 'package:proyecto_seminario_alvaro/models/edition.dart';
-import 'package:proyecto_seminario_alvaro/models/event_series.dart';
-import 'package:proyecto_seminario_alvaro/models/registration_field.dart';
-import 'package:proyecto_seminario_alvaro/models/event_message.dart';
-import 'package:proyecto_seminario_alvaro/models/event_task.dart';
 import 'package:proyecto_seminario_alvaro/logic/dates.dart';
+import 'package:proyecto_seminario_alvaro/models/edition.dart';
+import 'package:proyecto_seminario_alvaro/models/event_message.dart';
+import 'package:proyecto_seminario_alvaro/models/event_series.dart';
+import 'package:proyecto_seminario_alvaro/models/event_task.dart';
+import 'package:proyecto_seminario_alvaro/models/registration_field.dart';
 
-/// Proposes the date for a new edition of [series] given [today].
-///
-/// Rules (F-03):
-/// - Two or more editions: last date + gap between the two latest.
-/// - One edition: last date + 30 days.
-/// - If the result is not after today: today + 7 days.
 DateTime proposeDate(EventSeries series, DateTime today) {
   final sorted = [...series.editions]
     ..sort((a, b) => a.dateTime.compareTo(b.dateTime));
@@ -53,8 +45,6 @@ DateTime proposeDate(EventSeries series, DateTime today) {
   return candidate;
 }
 
-/// Clones [base] into a new edition with the given parameters.
-/// Copies fields, messages (unsent) and tasks (undone), all marked inherited.
 Edition cloneEdition(
   Edition base,
   String newId,
@@ -65,7 +55,7 @@ Edition cloneEdition(
 ) {
   final fields = base.fields
       .map((f) => RegistrationField(
-            id: 'f-${newId}-${f.id}',
+            id: 'f-$newId-${f.id}',
             label: f.label,
             type: f.type,
             isRequired: f.isRequired,
@@ -76,7 +66,7 @@ Edition cloneEdition(
 
   final messages = base.messages
       .map((m) => EventMessage(
-            id: 'm-${newId}-${m.id}',
+            id: 'm-$newId-${m.id}',
             type: m.type,
             subject: m.subject,
             body: m.body,
@@ -88,7 +78,7 @@ Edition cloneEdition(
 
   final tasks = base.tasks
       .map((t) => EventTask(
-            id: 't-${newId}-${t.id}',
+            id: 't-$newId-${t.id}',
             title: t.title,
             owner: t.owner,
             offsetDays: t.offsetDays,
@@ -115,7 +105,6 @@ Edition cloneEdition(
   );
 }
 
-/// Creates the first edition of a series from scratch (no inheritance).
 Edition firstEdition(
   String seriesId,
   String newId,
@@ -142,7 +131,6 @@ Edition firstEdition(
   );
 }
 
-/// Returns true if [edition] can be published (its date is after [today]).
 bool canPublish(Edition edition, DateTime today) {
   final todayOnly = DateTime(today.year, today.month, today.day);
   final editionDate = DateTime(
