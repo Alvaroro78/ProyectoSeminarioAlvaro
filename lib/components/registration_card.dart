@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:proyecto_seminario_alvaro/theme/app_theme.dart';
 
 /// A card displaying an attendee registration summary.
 class RegistrationCard extends StatelessWidget {
@@ -18,7 +19,7 @@ class RegistrationCard extends StatelessWidget {
   Color _statusColor(BuildContext context) {
     switch (status) {
       case 'Asististe':
-        return const Color(0xFF0F8478);
+        return AppColors.published;
       case 'No asististe':
         return Theme.of(context).colorScheme.error;
       case 'Próximo':

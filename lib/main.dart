@@ -7,6 +7,7 @@ import 'package:proyecto_seminario_alvaro/screens/new_series_screen.dart';
 import 'package:proyecto_seminario_alvaro/screens/organizer_main_screen.dart';
 import 'package:proyecto_seminario_alvaro/screens/register_screen.dart';
 import 'package:proyecto_seminario_alvaro/screens/series_screen.dart';
+import 'package:proyecto_seminario_alvaro/theme/app_theme.dart';
 
 void main() {
   runApp(const App());
@@ -21,14 +22,7 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: 'ProyectoSeminarioAlvaro',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF4453C9),
-          surface: const Color(0xFFFBFBFD),
-        ),
-        scaffoldBackgroundColor: const Color(0xFFFBFBFD),
-      ),
+      theme: buildTheme(),
       initialRoute: '/',
       routes: {
         '/': (context) => const LoginScreen(),

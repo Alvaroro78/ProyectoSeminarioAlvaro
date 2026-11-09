@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:proyecto_seminario_alvaro/theme/app_theme.dart';
 
 /// A chip displaying the status of an edition (draft, published, or closed).
 class StatusChip extends StatelessWidget {
@@ -9,12 +10,12 @@ class StatusChip extends StatelessWidget {
   Color _color() {
     switch (status) {
       case 'published':
-        return const Color(0xFF0F8478);
+        return AppColors.published;
       case 'closed':
-        return const Color(0xFF454C61);
+        return AppColors.closed;
       case 'draft':
       default:
-        return const Color(0xFF79809A);
+        return AppColors.draft;
     }
   }
 
@@ -42,11 +43,9 @@ class StatusChip extends StatelessWidget {
       ),
       child: Text(
         _label(),
-        style: TextStyle(
-          color: color,
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-        ),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: color,
+            ),
       ),
     );
   }
