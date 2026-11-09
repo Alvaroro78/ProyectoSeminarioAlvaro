@@ -1,7 +1,7 @@
 ---
 id: F-07
 titulo: Ciclo de vida de la edición
-version: 0.1.0
+version: 0.2.0
 fecha: 2026-11-08
 estado: borrador
 autores: [Álvaro José Roa Álvarez]
@@ -47,7 +47,7 @@ El organizador controla cuándo una edición recibe inscripciones y cuándo pasa
 
 - **CA-1** Dado una edición en borrador con fecha futura, cuando el organizador la publica, entonces queda publicada y aparece en los eventos de los invitados.
 - **CA-2** Dado una edición publicada, cuando el organizador la cierra, entonces desaparecen las opciones para cambiar preguntas, mensajes, tareas y asistencia.
-- **CA-3** Dado la edición 4 de los datos simulados cerrada sin asistentes marcados, cuando el organizador crea y abre la edición 5, entonces la recomendación de cupo usa las ediciones 2, 3 y 4: "asistieron 27 de 46 inscritos (59 %)" y "abre 34 cupos".
+- **CA-3** Dado la edición 4 de los datos simulados (capacidad 20) cerrada sin asistentes marcados, cuando el organizador crea y abre la edición 5, entonces la recomendación de cupo usa las ediciones 2, 3 y 4: "asistieron 27 de 46 inscritos (59 %)" y "abre 34 cupos".
 - **CA-4** Dado una edición en borrador con fecha pasada, cuando el organizador intenta publicarla, entonces ve "Para publicar, la fecha debe ser posterior a hoy".
 
 ## Fuera de alcance
@@ -61,4 +61,5 @@ El organizador controla cuándo una edición recibe inscripciones y cuándo pasa
 
 ## Historial
 
+- 0.2.0 · 2026-11-08 · CA-3: se añade "capacidad 20" a la precondición para que el cálculo del cupo sugerido sea verificable sin datos implícitos.
 - 0.1.0 · 2026-11-08 · Primera versión.

@@ -1,7 +1,7 @@
 ---
 id: F-08
 titulo: Recomendaciones de la edición
-version: 0.1.0
+version: 0.2.0
 fecha: 2026-11-08
 estado: borrador
 autores: [Álvaro José Roa Álvarez]
@@ -40,7 +40,7 @@ H es el historial del paso 2. Los porcentajes se muestran redondeados al entero.
 - **R2 · Tareas que se atrasan** (una tarjeta por tarea). Para cada tarea pendiente de la edición cuyo título aparece en H, se toman las ediciones de H donde esa tarea se marcó hecha y se calcula su retraso (F-06). Si se atrasó en 2 o más de ellas: días sugeridos = días actuales − (promedio de retrasos, redondeado hacia arriba). Aparece si los días actuales son mayores que los sugeridos.
   - Evidencia: "Se completó tarde en X de Y ediciones, en promedio Z días."
   - Aceptar: la tarea pasa a los días sugeridos.
-- **R3 · Preguntas que casi nadie responde** (una tarjeta por pregunta). Para cada pregunta opcional de la edición cuya etiqueta aparece en H: tasa de respuesta = respuestas no vacías ÷ inscritos de las ediciones de H que tenían esa pregunta. Aparece si la tasa es menor que 20 % y nadie ha respondido esa pregunta en la edición actual.
+- **R3 · Preguntas que casi nadie responde** (una tarjeta por pregunta). Para cada pregunta opcional de la edición cuya etiqueta aparece en H: tasa de respuesta = respuestas no vacías ÷ inscritos de las ediciones de H que tenían esa pregunta. "Inscritos" son todos los inscritos de esas ediciones, independientemente de si respondieron el formulario. Si los inscritos de esas ediciones suman 0, la tasa se considera indefinida y esa pregunta no genera recomendación. Aparece si la tasa es menor que 20 % y nadie ha respondido esa pregunta en la edición actual.
   - Evidencia: "Solo R de I inscritos la respondieron (P %)."
   - Aceptar: se quita la pregunta.
 - **R5 · Asistencia esperada.** Si la edición tiene inscritos: esperados = inscritos × tasa, redondeado hacia arriba.
@@ -64,8 +64,8 @@ H es el historial del paso 2. Los porcentajes se muestran redondeados al entero.
 Con los datos simulados y hoy = 8 nov 2026:
 
 - **CA-1** Dado la edición 4 (capacidad 20, cupo 20) y un historial donde asistieron 41 de 58 inscritos, cuando el organizador la abre, entonces ve la recomendación de abrir 28 cupos y, al aceptarla, el cupo queda en 28.
-- **CA-2** Dado la edición 4, cuando el organizador la abre, entonces ve recomendaciones para "Publicar la invitación" (D-10 a D-13) y "Enviar el agradecimiento" (D+2 a D+1), y ninguna para "Reservar el auditorio", que ya está hecha.
-- **CA-3** Dado la edición 5 recién creada desde la 4 sin aceptar nada, cuando el organizador la abre, entonces también ve "Reservar el auditorio" (D-21 a D-25).
+- **CA-2** Dado la edición 4, con historial ediciones 1, 2 y 3, donde "Publicar la invitación" (D-10) se atrasó en las 3 ediciones (retrasos: +3, +2, +4 días; promedio 3) y "Enviar el agradecimiento" (D+2) se atrasó en 2 de 3 ediciones (retrasos: 0, +2, +1 días; promedio sobre las 3 = 1), cuando el organizador abre la edición 4, entonces ve la recomendación de mover "Publicar la invitación" a D-13 y "Enviar el agradecimiento" a D+1. No aparece recomendación para "Reservar el auditorio" porque ya está hecha en la edición 4.
+- **CA-3** Dado la edición 5 recién creada desde la 4 sin aceptar nada, con historial ediciones 1, 2 y 3, donde "Reservar el auditorio" (D-21) se atrasó en las 3 ediciones (retrasos: +4, +3, +5 días; promedio 4), cuando el organizador abre la edición 5, entonces ve también la recomendación de mover "Reservar el auditorio" a D-25, además de las de CA-2.
 - **CA-4** Dado la edición 4, cuando el organizador la abre, entonces no ve recomendaciones de quitar preguntas, porque "Cargo" y "¿Cómo te enteraste del evento?" ya tienen respuestas en la 4. Dado la edición 5, entonces ve quitar "Cargo" (8 de 58, 14 %) y "¿Cómo te enteraste del evento?" (9 de 58, 16 %).
 - **CA-5** Dado la edición 4 con 8 inscritos, cuando el organizador la abre, entonces ve "espera 6 asistentes" y, al aceptarla, aparece la tarea "Ajustar la logística para 6 asistentes" en D-2.
 - **CA-6** Dado la recomendación de cupo descartada en la edición 4, cuando el organizador sale de la edición y vuelve a entrar, entonces esa recomendación no aparece.
@@ -82,4 +82,5 @@ Con los datos simulados y hoy = 8 nov 2026:
 
 ## Historial
 
+- 0.2.0 · 2026-11-08 · R3: se agrega cláusula de denominador cero y se aclara que "inscritos" son todos los de las ediciones de H. CA-2 y CA-3: se añaden los retrasos históricos de cada tarea para que los criterios sean autocontenidos.
 - 0.1.0 · 2026-11-08 · Primera versión.
